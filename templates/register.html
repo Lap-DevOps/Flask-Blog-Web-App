@@ -1,51 +1,46 @@
 {% extends 'layout.html' %}
 {% block content %}
 
-<div class="content-section"></div>
-
-<form action="" method="post">
-    {{ form.hidden_tag() }}
-    <fieldset class="form-gropp">
-        <legend class="border-bottom mb-4">Join Today</legend>
-        <div class="form-group">
-            {{ form.username.label(class='form-control-label') }}
-            {{form.username(class='form-conrtol form-control-lg') }}
-        </div>
-        <div class="form-group">
-            {{ form.email.label(class='form-control-label') }}
-            {{ form.email(class='form-conrtol form-control-lg') }}
-        </div>
-        <div class="form-group">
-            {{ form.password.label(class='form-control-label') }}
-            {{ form.password(class='form-conrtol form-control-lg') }}
-        </div>
-        <div class="form-group">
-            {{ form.confirm_password.label(class='form-check-label') }}
-            {{ form.confirm_password(class='form-conrtol form-control-lg') }}
-        </div>
-        <div class="form-group ">
-            <div class="form-check form-switch form-check-reverse">
-                {{ form.accept_tos.label(class='form-control-label') }}
-                {{ form.accept_tos(class="form-check-input")|safe }}
+<div class="content-section">
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Join Today</legend>
+            <div class="form-group">
+                {{ form.username.label(class="form-control-label") }}
+                {{ form.username(class="form-control form-control-lg") }}
             </div>
-    </fieldset>
-    <div class="form-group">
-        {{ form.recaptcha }}
+            <div class="form-group">
+                {{ form.email.label(class="form-control-label") }}
+                {{ form.email(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.password.label(class="form-control-label") }}
+                {{ form.password(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.confirm_password.label(class="form-control-label") }}
+                {{ form.confirm_password(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                <div class="form-check form-switch form-check-reverse mb-4 mt-4">
+                    {{ form.accept_tos(class="form-check-input")}}
+                    {{ form.accept_tos.label(class="form-check-label")  }}
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.recaptcha }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info mt-4 mb-4") }}
+        </div>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Already Have An Account? <a class="ml-2" href="{{ url_for('login')}}">Sign in</a>
+            </small>
+        </div>
+    </form>
+</div>
 
-
-    </div>
-    <div class="form-group">
-        {{ form.submit(class='btn btn-outline-info') }}
-    </div>
-
-    <div class="border-top pt-3">
-        <small class="text-muted">
-            Already Have An Account? <a class="ml-2" href="{{ url_for('login')}}">Sign in</a> 
-        </small>
-
-
-
-    </div>
-
-</form>
 {% endblock content %}
