@@ -2,7 +2,9 @@ from flask import url_for
 from flask_wtf import FlaskForm, RecaptchaField
 from markupsafe import Markup
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
+from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
+
+from models import User
 
 
 class RegistrationForm(FlaskForm):
@@ -16,26 +18,23 @@ class RegistrationForm(FlaskForm):
                                                                      EqualTo('password',
                                                                              message='Passwords must match')])
     accept_tos = BooleanField(Markup('I accept the <a href="">TOS</a> -'), validators=[DataRequired()], default=False)
-    recaptcha = RecaptchaField()  # Verify you're human: {{ form.recaptcha }}
+    recaptcha = RecaptchaField()
     submit = SubmitField('Submit')
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         self.accept_tos.label.text = Markup("I accept the <a href='{}'>TOS</a>".format(url_for('home')))
 
-    # def validate(self):
-    #     initial_validation = super(RegistrationForm, self).validate()
-    #     if not initial_validation:
-    #         return False
-    # #     user = User.query.filter_by(username=self.username.data).first()
-    #     if user:
-    #         self.username.errors.append("Username already registered")
-    #         return False
-    #     user = User.query.filter_by(email=self.email.data).first()
-    #     if user:
-    #         self.email.errors.append("Email already registered")
-    #         return False
-    #     return True
+    # def validate_email(self, field):
+    #     if User.query.filter_by(email=field.data).first():
+    #         raise ValidationError('This email is already registered. Please use a different one.')
+    #
+    # def validate_username(self, field):
+    #     if User.query.filter_by(username=field.data).first():
+    #         raise ValidationError('This username is already taken. Please choose a different one.')
+
+
+
 
 
 class LoginForm(FlaskForm):
