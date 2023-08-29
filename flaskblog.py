@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 from config import Configuration
 from forms import RegistrationForm, LoginForm
@@ -36,6 +36,9 @@ def about():
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     form = RegistrationForm()
+    if form.validate_on_submit():
+        print('POST method')
+        return render_template('register.html', title='Registration', form=form)
 
     return render_template('register.html', title='Registration', form=form)
 
