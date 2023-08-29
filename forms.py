@@ -4,24 +4,24 @@ from markupsafe import Markup
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
-from models import User
-
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=100, message='Name is too short')])
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=10, message='Name is too short')])
     email = EmailField('Email',
-                        validators=[DataRequired(), Length(min=2, max=50, message='Email is too short'), Email()])
+                       validators=[DataRequired(), Length(min=2, max=50, message='Email is too short'), Email()])
     password = PasswordField('Password',
                              validators=[DataRequired(), Length(min=2, max=20, message='Password is too short')])
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password',
-                                                                                             message='Passwords must match')])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(),
+
+                                                                     EqualTo('password',
+                                                                             message='Passwords must match')])
     accept_tos = BooleanField(Markup('I accept the <a href="">TOS</a> -'), validators=[DataRequired()], default=False)
-    recaptcha = RecaptchaField() # Verify you're human: {{ form.recaptcha }}
+    recaptcha = RecaptchaField()  # Verify you're human: {{ form.recaptcha }}
     submit = SubmitField('Submit')
 
-    # def __init__(self, *args, **kwargs):
-    #     super(RegistrationForm, self).__init__(*args, **kwargs)
-    #     self.accept_tos.label.text = Markup("I accept the <a href='{}'>TOS</a>".format(url_for('home')))
+    def __init__(self, *args, **kwargs):
+        super(RegistrationForm, self).__init__(*args, **kwargs)
+        self.accept_tos.label.text = Markup("I accept the <a href='{}'>TOS</a>".format(url_for('home')))
 
     # def validate(self):
     #     initial_validation = super(RegistrationForm, self).validate()
@@ -43,6 +43,7 @@ class LoginForm(FlaskForm):
                         validators=[DataRequired(), Length(1, 64), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Keep me logged in')
+    recaptcha = RecaptchaField()
     submit = SubmitField('Log In')
 
     def __init__(self, *args, **kwargs):

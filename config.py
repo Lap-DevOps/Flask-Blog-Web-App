@@ -13,7 +13,7 @@ class Configuration(object):
 
     RECAPTCHA_PUBLIC_KEY = '6LfjbN8nAAAAAI-ySgynDFEnlWRU8i9IszWkENDG'
     RECAPTCHA_PRIVATE_KEY = '6LfjbN8nAAAAAPHRqNmZh1GrfOZ8YGRlPvtgLylI'
-    RECAPTCHA_DATA_ATTRS=''
+
 
     TESTING = True
 
