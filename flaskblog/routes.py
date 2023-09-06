@@ -1,10 +1,9 @@
-from flask import Flask, render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for
 
-from config import Configuration
-from forms import RegistrationForm, LoginForm
+from flaskblog.forms import RegistrationForm, LoginForm
 
-app = Flask(__name__)
-app.config.from_object(Configuration)
+from flaskblog.models import User, Post
+from flaskblog import app
 
 posts = [
     {
@@ -53,7 +52,3 @@ def login():
         else:
             flash('Login Unsuccessful. Please check username and password', category='danger')
     return render_template('login.html', title='Login', form=form)
-
-
-if __name__ == '__main__':
-    app.run()

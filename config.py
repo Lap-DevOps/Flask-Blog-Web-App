@@ -2,7 +2,7 @@ class Configuration(object):
     DEBUG = True
     SECRET_KEY = 'ce1e098bee3e893eb8a108629f3fc117'
 
-    # SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:qwaszx12@localhost/test1?auth_plugin=mysql_native_password'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'
     #
     # SQLALCHEMY_TRACK_MODIFICATION = False
     #
