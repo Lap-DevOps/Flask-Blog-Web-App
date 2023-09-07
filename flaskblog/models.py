@@ -4,13 +4,13 @@ from datetime import datetime
 from flask_bcrypt import check_password_hash, generate_password_hash
 from flask_login import UserMixin
 
-from flaskblog import db
+from flaskblog import db, login_manager
 
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    # active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
+    active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
 
     # User Authentication fields
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
     # first_name = db.Column(db.String(50), nullable=False)
     # last_name = db.Column(db.String(50), nullable=False)
     # image_file = db.Column(db.LargeBinary)
-    # member_since = db.Column(db.DateTime(), default=datetime.utcnow())  # we will use moments.js af
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow())  # we will use moments.js af
     # last_seen = db.Column(db.DateTime(), default=datetime.utcnow())
 
     # roles = db.relationship('Role',
@@ -41,7 +41,7 @@ class User(db.Model, UserMixin):
 
     @password.setter
     def password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -98,3 +98,8 @@ class Post(db.Model):
 
     def __repr__(self):
         return f"<Post id: {self.id}, title: {self.title}>"
+
+
+@login_manager.user_loader
+def get_user(user_id):
+    return User.query.get(int(user_id))

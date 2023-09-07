@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm, RecaptchaField
 from markupsafe import Markup
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
-
+from .models import User
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=10, message='Name is too short')])
@@ -29,14 +29,14 @@ class RegistrationForm(FlaskForm):
                 raise ValidationError(
                     f"Character {char} is not allowed in username.")
 
-    # def validate_email(self, field):
-    #     if User.query.filter_by(email=field.data).first():
-    #         raise ValidationError(
-    #               'This email is already registered. Please use a different one.')
-    #
-    # def validate_username(self, field):
-    #     if User.query.filter_by(username=field.data).first():
-    #         raise ValidationError('This username is already taken. Please choose a different one.')
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError(
+                  'This email is already registered. Please use a different one.')
+
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError('This username is already taken. Please choose a different one.')
 
 
 class LoginForm(FlaskForm):
@@ -50,15 +50,15 @@ class LoginForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
 
-    # def validate(self):
-    #     initial_validation = super(LoginForm, self).validate()
-    #     if not initial_validation:
-    #         return False
-    #     user = User.query.filter_by(email=self.email.data).first()
-    #     if not user:
-    #         self.email.errors.append('Unknown email')
-    #         return False
-    #     if not user.verify_password(self.password.data):
-    #         self.password.errors.append('Invalid password')
-    #         return False
-    #     return True
+    def validate(self, *args, **kwargs):
+        initial_validation = super(LoginForm, self).validate()
+        if not initial_validation:
+            return False
+        user = User.query.filter_by(email=self.email.data).first()
+        if not user:
+            self.email.errors.append('Unknown email')
+            return False
+        if not user.verify_password(self.password.data):
+            self.password.errors.append('Invalid password')
+            return False
+        return True
