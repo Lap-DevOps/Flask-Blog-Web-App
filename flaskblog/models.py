@@ -15,7 +15,7 @@ class User(db.Model, UserMixin):
     # User Authentication fields
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120, collation='NOCASE'), unique=True, nullable=False)
-    # email_confirmed_at = db.Column(db.DateTime(), default=False)
+    email_confirmed_at = db.Column(db.DateTime(), default=None)
     confirmed = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(128))
 
