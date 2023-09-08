@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 
+from flask import current_app
 from flask_bcrypt import check_password_hash, generate_password_hash
 from flask_login import UserMixin
 
@@ -20,11 +21,15 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(128))
 
     # User fields
-    # first_name = db.Column(db.String(50), nullable=False)
-    # last_name = db.Column(db.String(50), nullable=False)
-    # image_file = db.Column(db.LargeBinary)
+    first_name = db.Column(db.String(50), default=None)
+    last_name = db.Column(db.String(50), default=None)
+
+    image_data = db.Column(db.LargeBinary)
+    image_filename = db.Column(db.String(255))
+    image_mimetype = db.Column(db.String(255))
+
     member_since = db.Column(db.DateTime(), default=datetime.utcnow())  # we will use moments.js af
-    # last_seen = db.Column(db.DateTime(), default=datetime.utcnow())
+    last_seen = db.Column(db.DateTime(), default=datetime.utcnow())
 
     # roles = db.relationship('Role',
     #                         secondary='user_roles',
@@ -35,6 +40,17 @@ class User(db.Model, UserMixin):
                             backref='author',
                             lazy='dynamic',
                             cascade='all, delete-orphan')
+
+    def __init__(self, image_data=None, image_filename=None, image_mimetype=None, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
+        self.image_data = image_data or self.default_image_data()
+        self.image_filename = image_filename or 'default.jpg'
+        self.image_mimetype = image_mimetype or 'image/jpeg'
+
+    def default_image_data(self):
+        with current_app.open_resource('static/images/default.jpg', 'rb') as f:
+            return f.read()
+
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
@@ -84,6 +100,7 @@ class Post(db.Model):
     title = db.Column(db.String(140), nullable=False)
     # slug = db.Column(db.String(140), unique=True)
     content = db.Column(db.Text, nullable=False)
+
     # created = db.Column(db.DateTime(), index=True, default=datetime.now)
     # views = db.Column(db.Integer, default=0)
     # likes = db.Column(db.Integer, default=0)

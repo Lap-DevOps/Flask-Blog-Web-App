@@ -1,12 +1,15 @@
 from flask import url_for
+from flask_login import current_user
 from flask_wtf import FlaskForm, RecaptchaField
 from markupsafe import Markup
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField,DateField,DateTimeField,DateTimeLocalField,TimeField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
+
 from .models import User
 
+
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=10, message='Name is too short')])
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20, message='Name is too short')])
     email = EmailField('Email',
                        validators=[DataRequired(), Length(min=2, max=50, message='Email is too short'), Email()])
     password = PasswordField('Password',
@@ -22,26 +25,25 @@ class RegistrationForm(FlaskForm):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         self.accept_tos.label.text = Markup("I accept the <a href='{}'>TOS</a>".format(url_for('home')))
 
-    def validate_username(self, username):
+    def validate_username(self, field):
         excluded_chars = " *?!'^+%&/()=}][{$#"
         for char in self.username.data:
             if char in excluded_chars:
                 raise ValidationError(
                     f"Character {char} is not allowed in username.")
 
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError('This username is already taken. Please choose a different one.')
+
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError(
-                  'This email is already registered. Please use a different one.')
-
-    def validate_username(self, field):
-        if User.query.filter_by(username=field.data).first():
-            raise ValidationError('This username is already taken. Please choose a different one.')
+                'This email is already registered. Please use a different one.')
 
 
 class LoginForm(FlaskForm):
     email = EmailField('Email',
-                        validators=[DataRequired(), Length(1, 64), Email()])
+                       validators=[DataRequired(), Length(1, 64), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Keep me logged in')
     recaptcha = RecaptchaField()
@@ -62,3 +64,34 @@ class LoginForm(FlaskForm):
             self.password.errors.append('Invalid password')
             return False
         return True
+
+
+class UpdateAccountForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20, message='Name is too short')])
+    email = EmailField('Email',
+                       validators=[DataRequired(), Length(min=4, max=50, message='Email is too short'), Email()])
+    first_name = StringField('First name')
+    last_name = StringField('Last name')
+    member_since = DateTimeField('Member since', format='%d-%m-%Y %H:%M')
+    submit = SubmitField('Update')
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateAccountForm, self).__init__(*args, **kwargs)
+
+    def validate_username(self, field):
+        excluded_chars = " *?!'^+%&/()=}][{$#"
+        for char in self.username.data:
+            if char in excluded_chars:
+                raise ValidationError(
+                    f"Character {char} is not allowed in username.")
+
+        if field.data != current_user.username and \
+                User.query.filter_by(username=field.data).first():
+            raise ValidationError(
+                'This username is already taken. Please choose a different one.')
+
+    def validate_email(self, field):
+        if field.data != current_user.email and \
+                User.query.filter_by(email=field.data).first():
+            raise ValidationError(
+                'This email is already registered. Please use a different one.')

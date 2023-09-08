@@ -1,8 +1,13 @@
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+
 class Configuration(object):
     DEBUG = True
     SECRET_KEY = 'ce1e098bee3e893eb8a108629f3fc117'
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
     #
     # SQLALCHEMY_TRACK_MODIFICATION = False
     #
@@ -13,7 +18,6 @@ class Configuration(object):
 
     RECAPTCHA_PUBLIC_KEY = '6LfjbN8nAAAAAI-ySgynDFEnlWRU8i9IszWkENDG'
     RECAPTCHA_PRIVATE_KEY = '6LfjbN8nAAAAAPHRqNmZh1GrfOZ8YGRlPvtgLylI'
-
 
     TESTING = True
 

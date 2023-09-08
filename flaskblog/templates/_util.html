@@ -1,6 +1,9 @@
 {% macro render_field(field) %}
     <div class="form-group">
-        {{ field.label(class="form-control-label") }}
+        {% if field.label %}
+         {{ field.label(class="form-control-label") }}
+        {% endif %}
+       
         {% if field.errors %}
         {{ field(class="form-control form-control-lg is-invalid",  **kwargs)|safe }}
                 <div class="invalid-feedback">

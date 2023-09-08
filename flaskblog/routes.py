@@ -1,9 +1,11 @@
-from flask import render_template, flash, redirect, url_for, request
-from flask_login import login_user, current_user, logout_user,login_required
-from sqlalchemy.exc import IntegrityError
+import io
+
+from flask import render_template, flash, redirect, url_for, request, send_file
+from flask_login import login_user, current_user, logout_user, login_required
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from flaskblog import app, db
-from flaskblog.forms import RegistrationForm, LoginForm
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm
 from .models import User
 
 posts = [
@@ -46,7 +48,7 @@ def register():
             db.session.commit()
             flash(f'Your account has been created! You are now able to log in', 'success')
             return redirect(url_for('login'))
-        except IntegrityError as e:
+        except SQLAlchemyError as e:
             db.session.rollback()  # Откатываем транзакцию в случае ошибки
             flash(f'Error. {e}', 'danger')
             return render_template('register.html', title='Registration', form=form)
@@ -82,8 +84,30 @@ def logout():
     return redirect('home')
 
 
-@app.route('/account')
+@app.route('/account', methods=['POST', 'GET'])
 @login_required
 def account():
-    user = current_user
-    return render_template('account.html', title='Account')
+    form = UpdateAccountForm(obj=current_user)
+    print(form.member_since)
+
+    if form.validate_on_submit():
+        try:
+            form.populate_obj(current_user)
+            db.session.commit()
+            flash('Your profile has been updated!', 'success')
+            return redirect(url_for('account'))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            flash('An error occurred while updating your profile.', 'danger')
+            # Логгирование ошибки или другие действия обработки ошибки
+
+    return render_template('account.html', title='Account', form=form)
+
+
+@app.route('/user_image/<int:user_id>')
+def user_image(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.image_data:
+        return send_file(io.BytesIO(user.image_data), mimetype='image/jpeg')
+    else:
+        return send_file('static/images/default.jpg', mimetype='image/jpeg')
