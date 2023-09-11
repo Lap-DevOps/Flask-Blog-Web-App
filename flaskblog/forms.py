@@ -1,8 +1,10 @@
 from flask import url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm, RecaptchaField
+from flask_wtf.file import FileAllowed, FileRequired
 from markupsafe import Markup
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField,DateField,DateTimeField,DateTimeLocalField,TimeField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField, DateTimeField, \
+    FileField, HiddenField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 
 from .models import User
@@ -95,3 +97,14 @@ class UpdateAccountForm(FlaskForm):
                 User.query.filter_by(email=field.data).first():
             raise ValidationError(
                 'This email is already registered. Please use a different one.')
+
+
+class UploadImageForm(FlaskForm):
+    image = FileField('Upload Image', validators=[
+        FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!'),
+        FileRequired()
+    ], render_kw={"id": "myImageField"})
+
+    submit = SubmitField('Upload', render_kw={"id": "cropButton"})
+    binary_data = HiddenField('Binary Data',render_kw={"id": "cropData"})
+

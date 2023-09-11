@@ -1,11 +1,13 @@
+import base64
+import datetime
 import io
 
 from flask import render_template, flash, redirect, url_for, request, send_file
 from flask_login import login_user, current_user, logout_user, login_required
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 
 from flaskblog import app, db
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, UploadImageForm
 from .models import User
 
 posts = [
@@ -88,14 +90,13 @@ def logout():
 @login_required
 def account():
     form = UpdateAccountForm(obj=current_user)
-    print(form.member_since)
 
     if form.validate_on_submit():
         try:
             form.populate_obj(current_user)
             db.session.commit()
             flash('Your profile has been updated!', 'success')
-            return redirect(url_for('account'))
+            return redirect(url_for('home'))
         except SQLAlchemyError as e:
             db.session.rollback()
             flash('An error occurred while updating your profile.', 'danger')
@@ -111,3 +112,34 @@ def user_image(user_id):
         return send_file(io.BytesIO(user.image_data), mimetype='image/jpeg')
     else:
         return send_file('static/images/default.jpg', mimetype='image/jpeg')
+
+
+@app.route('/upload_image', methods=['GET', 'POST'])
+@login_required
+def upload_image():
+    form = UploadImageForm(obj=current_user)
+
+    if form.validate_on_submit():
+        if form.image.data.filename:
+            image = form.image.data
+            user = current_user
+
+            image_data_base64 = base64.b64decode(form.binary_data.data.split(',')[1])
+            user.image_data = image_data_base64
+
+            user.image_filename = image.filename
+            user.image_mimetype = image.mimetype
+            user.uploaded = datetime.datetime.utcnow()
+
+
+            try:
+                form.populate_obj(current_user)
+                db.session.commit()
+                flash('Image uploaded successfully!', 'success')
+                return redirect(url_for('account'))
+            except SQLAlchemyError as e:
+                db.session.rollback()
+                flash(f'An error occurred while updating your profile. {e}', 'danger')
+                # Логгирование ошибки или другие действия обработки ошибки
+
+    return render_template('upload_image.html', title='Account image', form=form)

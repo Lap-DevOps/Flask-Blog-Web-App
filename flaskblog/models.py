@@ -27,6 +27,7 @@ class User(db.Model, UserMixin):
     image_data = db.Column(db.LargeBinary)
     image_filename = db.Column(db.String(255))
     image_mimetype = db.Column(db.String(255))
+    uploaded = db.Column(db.DateTime(), default=datetime.utcnow())
 
     member_since = db.Column(db.DateTime(), default=datetime.utcnow())  # we will use moments.js af
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow())
