@@ -1,6 +1,10 @@
 import base64
 import datetime
 import io
+import os
+import secrets
+
+from PIL import Image
 
 from flask import render_template, flash, redirect, url_for, request, send_file
 from flask_login import login_user, current_user, logout_user, login_required
@@ -24,6 +28,17 @@ posts = [
         'date_posted': 'April 21, 2018'
     }
 ]
+
+
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
+    image = Image.open(form_picture)
+    new_size = (150, 150)
+    image.thumbnail(new_size)
+    image.save(picture_path)
 
 
 @app.route("/")
@@ -130,8 +145,7 @@ def upload_image():
             user.image_filename = image.filename
             user.image_mimetype = image.mimetype
             user.uploaded = datetime.datetime.utcnow()
-
-
+            save_picture(form.image.data)
             try:
                 form.populate_obj(current_user)
                 db.session.commit()

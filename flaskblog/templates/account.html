@@ -6,7 +6,8 @@
 <div class="content-section">
     <div class="media d-flex ">
         <a href="{{url_for('upload_image')}}"><img class="rounded-circle account-img" src="{{ url_for('user_image', user_id=current_user.id) }}"
-                alt="User Image"></a>
+                alt="User Image">
+                </a>
 
         <div class="media-body">
             <h2 class="account-heading">{{current_user.username}}</h2>

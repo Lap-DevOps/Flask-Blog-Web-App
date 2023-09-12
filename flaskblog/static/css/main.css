@@ -78,6 +78,9 @@ a.article-title:hover {
   width: 125px;
   margin-right: 20px;
   margin-bottom: 16px;
+  border: 2px dashed #B22222; /* бордовая (красновато-коричневая) пунктирная рамка */
+  border-radius: 50%; /* делает рамку круглой */
+  margin: 20px;
 }
 
 .account-heading {
