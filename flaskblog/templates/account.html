@@ -1,9 +1,58 @@
 {% extends 'layout.html' %}
+{% from "_util.html" import render_field %}
+
+
 {% block content %}
-    <h1>{{ current_user.username }}</h1>
-    <br>
-    <p>{{current_user.email}}</p>
-    <p>{{current_user.is_active}}</p>
-    <p>{{current_user.member_since}}</p>
-    <p>{{current_user.password_hash}}</p>
+<div class="content-section">
+    <div class="media d-flex ">
+        <a href="{{url_for('upload_image')}}"><img class="rounded-circle account-img" src="{{ url_for('user_image', user_id=current_user.id) }}"
+                alt="User Image">
+                </a>
+
+        <div class="media-body">
+            <h2 class="account-heading">{{current_user.username}}</h2>
+            <p class="text-secondary">{{current_user.email}}</p>
+        </div>
+
+
+    </div>
+
+    <!-- FORM -->
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Account Info</legend>
+
+            {{ render_field(form.username, placeholder="Username") }}
+            {{ render_field(form.email, placeholder="Email") }}
+            {{ render_field(form.first_name, placeholder="First name") }}
+            {{ render_field(form.last_name, placeholder="Last name") }}
+            {{ render_field(form.member_since, placeholder="Member since...") }}
+
+
+
+
+        </fieldset>
+
+
+
+
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info mt-4 mb-4") }}
+        </div>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Last login: {{ moment(current_user.member_since).format('LL') }}
+            </small>
+        </div>
+
+    </form>
+
+
+
+
+</div>
+
+
+
 {% endblock content %}
