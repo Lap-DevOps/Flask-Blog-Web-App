@@ -99,12 +99,12 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     title = db.Column(db.String(140), nullable=False)
-    # slug = db.Column(db.String(140), unique=True)
+    slug = db.Column(db.String(140), unique=True)
     content = db.Column(db.Text, nullable=False)
 
-    # created = db.Column(db.DateTime(), index=True, default=datetime.now)
-    # views = db.Column(db.Integer, default=0)
-    # likes = db.Column(db.Integer, default=0)
+    created = db.Column(db.DateTime(), index=True, default=datetime.now())
+    views = db.Column(db.Integer, default=0)
+    likes = db.Column(db.Integer, default=0)
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)

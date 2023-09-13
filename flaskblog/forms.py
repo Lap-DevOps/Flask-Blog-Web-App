@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm, RecaptchaField
 from flask_wtf.file import FileAllowed, FileRequired
 from markupsafe import Markup
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField, DateTimeField, \
-    FileField, HiddenField
+    FileField, HiddenField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 
 from .models import User
@@ -106,5 +106,10 @@ class UploadImageForm(FlaskForm):
     ], render_kw={"id": "myImageField"})
 
     submit = SubmitField('Upload', render_kw={"id": "cropButton"})
-    binary_data = HiddenField('Binary Data',render_kw={"id": "cropData"})
+    binary_data = HiddenField('Binary Data', render_kw={"id": "cropData"})
 
+
+class NewPost(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    content = TextAreaField('Content', validators=[DataRequired()])
+    submit = SubmitField('Add post')
