@@ -6,7 +6,7 @@
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Create new post</legend>
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
 
             {{ render_field(form.title, placeholder="Post title") }}
             {{ render_field(form.content, placeholder="Say somethin") }}
