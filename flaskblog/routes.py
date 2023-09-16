@@ -240,7 +240,7 @@ def send_async_email(app, msg):
         mail.send(msg)
 def send_reset_email(user, sync=False):
     token = user.get_reset_token()
-    msg = Message("Password Reset Request", sender='noreply@flaskblog.com', recipients=[user.email])
+    msg = Message("Password Reset Request", recipients=[user.email])
     msg.body = render_template('reset_password.txt', user=user, token=token)
     msg.html = render_template('reset_password.html', user=user, token=token)
 
