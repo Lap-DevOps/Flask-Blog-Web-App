@@ -8,6 +8,7 @@ from flask_mail import Mail
 
 from config import Configuration
 
+
 # Create Flask app load app.config
 app = Flask(__name__)
 app.config.from_object(Configuration)
@@ -26,4 +27,12 @@ moment = Moment(app)
 
 migrate = Migrate(app, db)
 
-from flaskblog import routes
+
+from flaskblog.main.routes import main
+from flaskblog.users.routes import users
+from flaskblog.posts.routes import posts
+
+
+app.register_blueprint(main)
+app.register_blueprint(users)
+app.register_blueprint(posts)

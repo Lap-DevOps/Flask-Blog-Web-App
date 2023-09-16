@@ -4,10 +4,10 @@ from flask_wtf import FlaskForm, RecaptchaField
 from flask_wtf.file import FileAllowed, FileRequired
 from markupsafe import Markup
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField, DateTimeField, \
-    FileField, HiddenField, TextAreaField
+    FileField, HiddenField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 
-from .models import User
+from flaskblog.models import User
 
 
 class RegistrationForm(FlaskForm):
@@ -35,7 +35,8 @@ class RegistrationForm(FlaskForm):
                     f"Character {char} is not allowed in username.")
 
         if User.query.filter_by(username=field.data).first():
-            raise ValidationError('This username is already taken. Please choose a different one.')
+            raise ValidationError(
+                'This username is already taken. Please choose a different one.')
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
@@ -107,12 +108,6 @@ class UploadImageForm(FlaskForm):
 
     submit = SubmitField('Upload', render_kw={"id": "cropButton"})
     binary_data = HiddenField('Binary Data', render_kw={"id": "cropData"})
-
-
-class NewPost(FlaskForm):
-    title = StringField('Title', validators=[DataRequired()])
-    content = TextAreaField('Content', validators=[DataRequired()])
-    submit = SubmitField('Add post')
 
 
 class Request_Reset_form(FlaskForm):
