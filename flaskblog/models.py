@@ -4,8 +4,9 @@ from datetime import datetime
 from flask import current_app
 from flask_bcrypt import check_password_hash, generate_password_hash
 from flask_login import UserMixin
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
-from flaskblog import db, login_manager
+from flaskblog import db, login_manager, app
 
 
 class User(db.Model, UserMixin):
@@ -48,6 +49,19 @@ class User(db.Model, UserMixin):
         self.image_filename = image_filename or 'default.jpg'
         self.image_mimetype = image_mimetype or 'image/jpeg'
 
+    def get_reset_token(self, expired_sec=1800):
+        s = Serializer(app.config['SECRET_KEY'], expired_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
+
+    @staticmethod
     def default_image_data(self):
         with current_app.open_resource('static/images/default.jpg', 'rb') as f:
             return f.read()

@@ -113,3 +113,23 @@ class NewPost(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
     submit = SubmitField('Add post')
+
+
+class Request_Reset_form(FlaskForm):
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    recaptcha = RecaptchaField()
+    submit = SubmitField('Request Password Reset')
+
+    def validate_email(self, field):
+        if not User.query.filter_by(email=field.data).first():
+            raise ValidationError(
+                'There is no account with this email. You must register first.')
+
+
+class Reset_Password_form(FlaskForm):
+    password = PasswordField('Password',
+                             validators=[DataRequired(), Length(min=2, max=20, message='Password is too short'),
+                                         EqualTo('confirm_password', message='Passwords must match')])
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
+    submit = SubmitField('Reset Password')

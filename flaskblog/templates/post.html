@@ -5,7 +5,7 @@
 
 <div class="media-body">
     <div class="article-metadata">
-      <img class='rounded-circle article-img' src="{{ url_for('user_image', user_id=current_user.id) }}" alt="User image">
+      <img class='rounded-circle article-img' src="{{ url_for('user_image', user_id=post.author.id) }}" alt="User image">
       <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username )}}">{{ post.author.username }}</a>
       <small class="text-muted">{{ moment(post.created).format('HH:mm,  DD MMM YYYY') }}</small>
       <div>

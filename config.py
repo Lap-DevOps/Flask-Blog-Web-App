@@ -1,6 +1,8 @@
 import os
+from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
 
 
 class Configuration(object):
@@ -29,3 +31,13 @@ class Configuration(object):
     RECAPTCHA_THEME = 'dark'
     RECAPTCHA_SIZE = "compact"
     RECAPTCHA_LANGUAGE = "ru"
+
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USE_SSL = False
+    MAIL_DEFAULT_SENDER = 'noreply.notifications.flaskblog@gmail.com'
+    MAIL_DEBUG = False
+    MAIL_SUPPRESS_SEND = False
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')

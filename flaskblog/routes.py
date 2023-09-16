@@ -3,14 +3,18 @@ import datetime
 import io
 import os
 import secrets
+from threading import Thread
 
 from PIL import Image
-from flask import render_template, flash, redirect, url_for, request, send_file, abort
+from flask import render_template, flash, redirect, url_for, request, send_file, abort, current_app
 from flask_login import login_user, current_user, logout_user, login_required
+from flask_mail import Message
 from sqlalchemy.exc import SQLAlchemyError
+from urllib.parse import urlsplit
 
-from flaskblog import app, db
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, UploadImageForm, NewPost
+from flaskblog import app, db, mail
+from flaskblog.forms import (RegistrationForm, LoginForm, UpdateAccountForm, UploadImageForm,
+                             NewPost, Reset_Password_form, Request_Reset_form)
 from .models import User, Post
 
 
@@ -37,10 +41,10 @@ def home():
 def user_posts(username):
     page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
-    posts = Post.query\
-        .filter_by(author=user)\
-        .order_by(Post.created.desc())\
-        .paginate(page=page, per_page=1)
+    posts = Post.query \
+        .filter_by(author=user) \
+        .order_by(Post.created.desc()) \
+        .paginate(page=page, per_page=3)
     return render_template('user_posts.html', posts=posts, user=user)
 
 
@@ -83,7 +87,7 @@ def login():
             flash('You have been successfully logged in!', category='success')
             flash(f'Welcome, {user.username}!', 'success')
             next_page = request.args.get('next')
-            if next_page is None or not next_page.startswith('/'):
+            if next_page is None or not next_page.startswith('/') or urlsplit(next_page).netloc != '':
                 return redirect(url_for('home'))
             return redirect(next_page)
         else:
@@ -230,3 +234,62 @@ def delete_post(post_id):
         # Логгирование ошибки или другие действия обработки ошибки
 
     return redirect(url_for('home'))
+
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+def send_reset_email(user, sync=False):
+    token = user.get_reset_token()
+    msg = Message("Password Reset Request", recipients=[user.email])
+    msg.body = render_template('reset_password.txt', user=user, token=token)
+    msg.html = render_template('reset_password.html', user=user, token=token)
+
+    if sync:
+        mail.send(msg)
+    else:
+        Thread(target=send_async_email,
+               args=(current_app._get_current_object(), msg)).start()
+
+
+
+
+@app.route('/reset_password', methods=['POST', "GET"])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
+    form = Request_Reset_form()
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('Email has been sent with instruction to reset your password.', 'info')
+        return redirect(url_for('login'))
+
+    return render_template('reset_request.html', title='Reset Password', form=form)
+
+
+@app.route('/reset_password/<token>', methods=['POST', "GET"])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash("That is an invalid  or expired token", 'warning')
+        return redirect(url_for('reset_request'))
+
+    form = Reset_Password_form()
+
+    if form.validate_on_submit():
+        user.password=form.password.data
+
+        try:
+            db.session.commit()
+            flash(f'Your password has been updated! You are now able to log in', 'success')
+            return redirect(url_for('login'))
+        except SQLAlchemyError as e:
+            db.session.rollback()  # Откатываем транзакцию в случае ошибки
+            flash(f'Error. {e}', 'danger')
+            return render_template('register.html', title='Registration', form=form)
+    return render_template('reset_token.html', title='Reset Password', form=form)
