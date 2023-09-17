@@ -7,6 +7,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Email
     FileField, HiddenField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 
+from flaskblog import main
 from flaskblog.models import User
 
 
@@ -19,13 +20,15 @@ class RegistrationForm(FlaskForm):
                                          EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
-    accept_tos = BooleanField(Markup('I accept the <a href="">TOS</a> -'), validators=[DataRequired()], default=False)
+    accept_tos = BooleanField(Markup(f'I accept the TOS</a> -'), validators=[DataRequired()], default=False)
     recaptcha = RecaptchaField()
     submit = SubmitField('Submit')
 
+
+
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
-        self.accept_tos.label.text = Markup("I accept the <a href='{}'>TOS</a>".format(url_for('home')))
+        self.accept_tos.label.text = Markup(f'I accept the <a href="{url_for("main.about")}">TOS</a> -')
 
     def validate_username(self, field):
         excluded_chars = " *?!'^+%&/()=}][{$#"

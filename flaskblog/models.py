@@ -62,7 +62,7 @@ class User(db.Model, UserMixin):
         return User.query.get(user_id)
 
     @staticmethod
-    def default_image_data(self):
+    def default_image_data():
         with current_app.open_resource('static/images/default.jpg', 'rb') as f:
             return f.read()
 

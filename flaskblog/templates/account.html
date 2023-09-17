@@ -5,7 +5,7 @@
 {% block content %}
 <div class="content-section">
     <div class="media d-flex ">
-        <a href="{{url_for('upload_image')}}"><img class="rounded-circle account-img" src="{{ url_for('user_image', user_id=current_user.id) }}"
+        <a href="{{url_for('users.upload_image')}}"><img class="rounded-circle account-img" src="{{ url_for('users.user_image', user_id=current_user.id) }}"
                 alt="User Image">
                 </a>
 

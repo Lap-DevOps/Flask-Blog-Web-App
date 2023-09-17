@@ -31,6 +31,7 @@ migrate = Migrate(app, db)
 from flaskblog.main.routes import main
 from flaskblog.users.routes import users
 from flaskblog.posts.routes import posts
+# from flaskblog.users.utils import *
 
 
 app.register_blueprint(main)

@@ -27,7 +27,7 @@ def new_post():
             db.session.add(post)
             db.session.commit()
             flash('Your post has been created!', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('main.home'))
         except SQLAlchemyError as e:
             db.session.rollback()
             flash('An error occurred while adding your post.', 'danger')
@@ -57,7 +57,7 @@ def update_post(post_id):
             db.session.add(post)
             db.session.commit()
             flash('Your post has been updated!', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('main.home'))
         except SQLAlchemyError as e:
             db.session.rollback()
             flash('An error occurred while updating your post.', 'danger')
@@ -79,10 +79,10 @@ def delete_post(post_id):
         db.session.delete(post)
         db.session.commit()
         flash('Your post has been deleted!', 'success')
-        return redirect(url_for('home'))
+        return redirect(url_for('main.home'))
     except SQLAlchemyError as e:
         db.session.rollback()
         flash('An error occurred while deleting your post.', 'danger')
         # Логгирование ошибки или другие действия обработки ошибки
 
-    return redirect(url_for('home'))
+    return redirect(url_for('main.home'))
