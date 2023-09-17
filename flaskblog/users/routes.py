@@ -12,9 +12,9 @@ from flaskblog import db
 from flaskblog.models import User, Post
 from flaskblog.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, UploadImageForm, Request_Reset_form, \
     Reset_Password_form
-from users.utils import save_picture, send_reset_email
+from flaskblog.users.utils import save_picture, send_reset_email
 
-# from flaskblog.users.utils import reset_request
+
 
 users = Blueprint('users', __name__)
 
@@ -59,6 +59,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
+        recaptcha_token = request.form.get('g-recaptcha-response')
+
         if user and user.verify_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             flash('You have been successfully logged in!', category='success')

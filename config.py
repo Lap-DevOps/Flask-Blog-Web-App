@@ -1,13 +1,17 @@
 import os
 from dotenv import load_dotenv
+from envparse import env
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
 
+env.read_envfile()
+
+
 
 class Configuration(object):
     DEBUG = True
-    SECRET_KEY = os.environ.get('SECRET_KEY')
+    SECRET_KEY = env.str("SECRET_KEY")
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
     #

@@ -9,23 +9,17 @@ from flask_mail import Mail
 from config import Configuration
 
 
-# Create Flask app load app.config
-app = Flask(__name__)
-app.config.from_object(Configuration)
-
 # Initialize Flask-SQLAlchemy
-db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+db = SQLAlchemy()
+bcrypt = Bcrypt()
+login_manager = LoginManager()
+login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
 
 
-mail = Mail(app)
-
-moment = Moment(app)
-
-migrate = Migrate(app, db)
+mail = Mail()
+moment = Moment()
+migrate = Migrate(db)
 
 
 from flaskblog.main.routes import main
@@ -34,6 +28,20 @@ from flaskblog.posts.routes import posts
 # from flaskblog.users.utils import *
 
 
-app.register_blueprint(main)
-app.register_blueprint(users)
-app.register_blueprint(posts)
+def crate_app(config_class=Configuration):
+    # Create Flask app load app.config
+    app = Flask(__name__)
+    app.config.from_object(Configuration)
+    db.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+    moment.init_app(app)
+    migrate.init_app(app)
+    mail.init_app(app)
+
+
+    app.register_blueprint(main)
+    app.register_blueprint(users)
+    app.register_blueprint(posts)
+
+    return app
