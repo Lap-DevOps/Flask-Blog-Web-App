@@ -25,7 +25,7 @@ class Configuration(object):
     RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
     RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
 
-    TESTING = True
+    TESTING = False
 
     RECAPTCHA_OPTIONS = dict(
         theme='custom',
