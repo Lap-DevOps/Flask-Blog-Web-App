@@ -4,7 +4,7 @@
 {% block content %}
 <div class="content-section">
     <div class="media d-flex ">
-        <img class="rounded-circle account-img" src="{{ url_for('user_image', user_id=current_user.id) }}"
+        <img class="rounded-circle account-img" src="{{ url_for('users.user_image', user_id=current_user.id) }}"
             alt="User Image">
         <div class="media-body">
             <h2 class="account-heading">{{current_user.username}}</h2>

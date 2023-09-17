@@ -1,6 +1,6 @@
+from flaskblog import crate_app
 
-from flaskblog import app
-
+app = crate_app()
 
 if __name__ == '__main__':
     app.run()

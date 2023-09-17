@@ -6,7 +6,7 @@ from flask_bcrypt import check_password_hash, generate_password_hash
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
-from flaskblog import db, login_manager, app
+from flaskblog import db, login_manager
 
 
 class User(db.Model, UserMixin):
@@ -50,11 +50,11 @@ class User(db.Model, UserMixin):
         self.image_mimetype = image_mimetype or 'image/jpeg'
 
     def get_reset_token(self, expired_sec=1800):
-        s = Serializer(app.config['SECRET_KEY'], expired_sec)
+        s = Serializer(current_app.config['SECRET_KEY'], expired_sec)
         return s.dumps({'user_id': self.id}).decode('utf-8')
 
     def verify_reset_token(token):
-        s = Serializer(app.config['SECRET_KEY'])
+        s = Serializer(current_app.config['SECRET_KEY'])
         try:
             user_id = s.loads(token)['user_id']
         except:
@@ -62,7 +62,7 @@ class User(db.Model, UserMixin):
         return User.query.get(user_id)
 
     @staticmethod
-    def default_image_data(self):
+    def default_image_data():
         with current_app.open_resource('static/images/default.jpg', 'rb') as f:
             return f.read()
 

@@ -4,9 +4,9 @@
 from flask_migrate import Migrate
 from flaskblog import  *
 
-from flaskblog import app
+from flaskblog import current_app
 
-migrate = Migrate(app, db)
+migrate = Migrate(current_app, db)
 
 @app.cli.command('my_custom_command')
 def db_init():
