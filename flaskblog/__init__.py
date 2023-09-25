@@ -6,7 +6,7 @@ from flask_migrate import Migrate
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 
-from config import Configuration
+from config import config
 
 # Initialize Flask-SQLAlchemy
 db = SQLAlchemy()
@@ -28,15 +28,17 @@ from flaskblog.errors.error_handelers import errors
 # from flaskblog.users.utils import *
 
 
-def crate_app(config_class=Configuration):
+def create_app(config_name):
     # Create Flask app load app.config
     app = Flask(__name__)
-    app.config.from_object(Configuration)
+    app.config.from_object(config[config_name])
+    config[config_name].init_app(app)
+
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
     moment.init_app(app)
-    migrate.init_app(app)
+    migrate.init_app(app, db)
     mail.init_app(app)
 
     app.register_blueprint(main)
