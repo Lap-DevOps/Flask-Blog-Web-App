@@ -1,3 +1,2 @@
-FLASK_APP=flaskblog
+FLASK_APP=
 FLASK_ENV=development
-DEBUG = True
