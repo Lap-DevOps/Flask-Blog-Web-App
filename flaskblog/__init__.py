@@ -30,7 +30,7 @@ from flaskblog.errors.error_handelers import errors
 # from flaskblog.users.utils import *
 
 
-def create_app(config_name):
+def create_app(config_name='default'):
     # Create Flask app load app.config
     app = Flask(__name__)
     config_name = os.getenv('FLASK_CONFIG') or 'default'
